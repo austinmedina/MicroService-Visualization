@@ -57,7 +57,10 @@ export const InfoBox = (props: Props) => {
                                                  <>
                                                     <li className="font-medium">
                                                      HTTP method: {func.type}
-                                                 </li>
+                                                    </li>
+                                                    <li className="font-medium">
+                                                     URL: {func.destinationUrl}
+                                                    </li>
                                                 </>
                                             
                                             )}

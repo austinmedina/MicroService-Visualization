@@ -23,6 +23,7 @@ type Props = {
     trackNodes: any;
     focusNode: any;
     trackChanges: any;
+    endpointCalls: any;
 };
 
 const VisualizationOptions: React.FC<Props> = ({
@@ -45,6 +46,7 @@ const VisualizationOptions: React.FC<Props> = ({
     trackNodes,
     focusNode,
     trackChanges,
+    endpointCalls
 }) => {
     const Shared2D3DProps: SharedProps = {
         linkDirectionalArrowRelPos: 1,
@@ -91,6 +93,8 @@ const VisualizationOptions: React.FC<Props> = ({
                 trackNodes={trackNodes}
                 focusNode={focusNode}
                 trackChanges={trackChanges}
+                endpointCalls={endpointCalls}
+
             />
         </div>
     );

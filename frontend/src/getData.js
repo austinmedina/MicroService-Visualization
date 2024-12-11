@@ -105,6 +105,7 @@ export default function getData(myData, nodes_array){
                             {
                                 "source": source,
                                 "target": destination,
+                                "nodeType": "link",
                                 "requests": [
                                 {
                                     "destinationUrl": url,

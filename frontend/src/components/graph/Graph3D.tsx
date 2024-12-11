@@ -31,6 +31,7 @@ type Props = {
     trackNodes: any;
     focusNode: any;
     trackChanges: any;
+    endpointCalls: any;
 };
 
 const Graph: React.FC<Props> = ({
@@ -51,6 +52,7 @@ const Graph: React.FC<Props> = ({
     trackNodes,
     focusNode,
     trackChanges,
+    endpointCalls
 }) => {
     const [highlightNodes, setHighlightNodes] = useState<Set<string>>(
         new Set()
@@ -143,8 +145,7 @@ const Graph: React.FC<Props> = ({
         },
         [graphRef]
     );
-    console.log(graphRef);
-    console.log(sharedProps.graphData);
+    
 
     return (
         <ForceGraph3D
@@ -207,6 +208,7 @@ const Graph: React.FC<Props> = ({
                 else{
                     func = new THREE.SphereGeometry(5)
                 }
+                
                 const nodes = new THREE.Mesh(
                     func,
                     new THREE.MeshLambertMaterial({
@@ -260,6 +262,15 @@ const Graph: React.FC<Props> = ({
                     return 0;
                 }
             }}
+            linkDirectionalParticleSpeed={(link:any) =>{
+                if (highlightLinks.has(link.name)){
+                    return 0.01;
+                }
+                if (endpointCalls.includes(link.name)){
+                    return 0;
+                }
+                return 0.01;
+            }}
             linkDirectionalArrowLength={10}
             linkDirectionalArrowRelPos={sharedProps.linkDirectionalArrowRelPos}
             linkDirectionalArrowColor={(link) =>
@@ -275,7 +286,7 @@ const Graph: React.FC<Props> = ({
                 )
             }
             linkDirectionalParticles={(link: any) => {
-                return highlightLinks.has(link.name) ? 4 : 0;
+                return highlightLinks.has(link.name) || endpointCalls.includes(link.name) ? 4 : 0;
             }}
             linkDirectionalParticleWidth={(link) =>
                 getLinkWidth(

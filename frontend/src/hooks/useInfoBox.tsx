@@ -20,8 +20,7 @@ export const useInfoBox = (graphData: any, setFocusNode: any) => {
             console.log(event);
             node = event.detail.node;
             // different popup for link
-            if ("type" in node && node["type"] == "link"){
-                console.log(event.detail.node);
+            if (node["nodeType"] == "link"){
                 setAnchorPoint({ x: event.pageX, y: event.pageY });
                 setName(node.name);
                 setType("link");
@@ -34,8 +33,17 @@ export const useInfoBox = (graphData: any, setFocusNode: any) => {
                 setDepends([]);
                 //setAntiPatterns(event.detail.node.patterns)
                 setShow(true);
-                setSource(node.source.microserviceName);
-                setDestination(node.target.microserviceName);
+                if (node.source.nodeType == "microservice"){
+                    setSource(node.source.nodeName);
+                    setDestination(node.target.nodeName);
+
+                }
+                else{
+                    setSource(node.source.microserviceName);
+                    setDestination(node.target.microserviceName);
+
+                }
+                
             }
             else{
                 if (node.nodeType != "microservice"){

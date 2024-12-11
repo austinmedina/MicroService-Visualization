@@ -3,7 +3,6 @@ import GraphWrapper from "./components/graph/GraphWrapper";
 import GraphMenu from "./components/graphControlMenu/GraphMenu";
 import Menu from "./components/graph/RightClickNodeMenu";
 import { InfoBox } from "./components/graph/NodeInfoBox";
-// import myData from "./data/IR 1.json";
 import GraphMode from "./components/graphMode/GraphMode";
 import TimeSlider from "./components/graph/TimeSlider";
 import ColorSelector from "./components/graphMode/VisualModeColorSelector";
@@ -183,6 +182,7 @@ function App(data: any) {
                 trackNodes={trackNodes}
                 focusNode={focusNode}
                 trackChanges={trackChanges}
+                endpointCalls={[]}
             />
             <Menu trackNodes={trackNodes} setTrackNodes={setTrackNodes} />
 

@@ -8,6 +8,7 @@ import { InfoBox } from "./components/graph/NodeInfoBox";
 import Menu from "./components/graph/RightClickNodeMenu";
 import * as THREE from "three";
 import ForceGraph3D from "react-force-graph-3d";
+import { WebGL1Renderer } from "three";
 
 import axios from "axios";
 
@@ -36,6 +37,9 @@ export default function Node(){
     const [trackNodes, setTrackNodes] = useState([]);
     const [focusNode, setFocusNode] = useState();
     const microserviceColors = data[1];
+    const endpointCalls = data[2];
+    
+    
     
     
         return (
@@ -63,6 +67,7 @@ export default function Node(){
                 selectedAntiPattern={selectedAntiPattern}
                 trackNodes={trackNodes}
                 focusNode={focusNode}
+                endpointCalls={endpointCalls}
             />
              <Menu trackNodes={trackNodes} setTrackNodes={setTrackNodes} />
 
@@ -85,50 +90,87 @@ export default function Node(){
 
 function Legend(microservices) {
     let data = microservices["microservices"];
-    let sphere = {"nodes":[{"nodeName" : "Sphere", "type": "SERVICE"}], "links":[]};
+    let service = {"nodes":[{"nodeName" : "Sphere", "type": "SERVICE"}], "links":[]};
+    let controller = {"nodes":[{"nodeName" : "Box", "type": "CONTROLLER"}], "links":[]};
+    let repository = {"nodes":[{"nodeName" : "Cone", "type": "REPOSITORY"}], "links":[]};
+    let entity = {"nodes":[{"nodeName" : "Cylinder", "type": "ENTITY"}], "links":[]};
+    const [isVisible, setIsVisible] = useState(true);
+    const serviceRef = useRef();
+    const controllerRef = useRef();
+    const repositoryRef = useRef();
+    const entityRef = useRef();
+   
+
+
+    const toggleVisibility = () => {
+      setIsVisible(!isVisible); 
+    }
+  
     
     
     return (
     <div style={{
       display: "flex",
       overflow: "auto",
-      flexDirection: "column",      /* Stack elements vertically */
-      alignItems: "flex-end",       /* Align items to the right */
+      flexDirection: "column",      
+      alignItems: "flex-end",      
       position: "absolute",
-      top: "20px",                 /* Distance from the top of the page */
-      right: "20px",                 /* Distance from the right of the page */
+      top: "20px",                 
+      right: "20px",                
       gap: "10px", 
-      font: "100px"
+      font: "100px",
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '300px'
+
     }}>
-    <div
+      <button onClick={toggleVisibility}
+        style={{
+          backgroundColor: "lightblue",
+          color: 'black',
+          border: 'none',
+          padding: '10px 15px',
+          cursor: 'pointer',
+          borderRadius: '5px',
+          fontSize: '16px'
+      }}>
+        {isVisible ? 'Hide' : 'Show'}
+      </button>
+     
+    {isVisible && (
+      <>
+        <div
       style={{
         fontSize:"20px",
         padding: "10px",
         backgroundColor: "lightblue",
         border: "1px solid blue",
         width: "300px",             /* Adjust width as needed */
-        maxHeight: "250px", 
+        maxHeight: "1000px", 
         textAlign: "center",
       }}
     >
       <h3 style={{ margin: '0 0 10px' }}>Legend</h3>
       <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
-        <li>
+        <li style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
           Service: 
           <ForceGraph3D
-            ref = {useRef()}
-            graphData={sphere}
-            width={50}
-            height={50}
+            ref = {serviceRef}
+            graphData={service}
+            width={200}
+            height={150}
             backgroundColor={"rgba(255,255,255,255)"}
-            nodeThreeObject={() => {
-              const node = new THREE.Mesh(
+            nodeThreeObject={(node) => {
+              const nodes = new THREE.Mesh(
                 new THREE.SphereGeometry(50),
                 new THREE.MeshLambertMaterial({
-                    color: 'rgb(0,0,0)',
+                    transparent: true,
+                    opacity: 0.75,
+                    color: 'rgb(20,40,0)',
                 })
+                
             );
-            return node;
+            return nodes;
 
             }
           }
@@ -136,20 +178,106 @@ function Legend(microservices) {
             
           </ForceGraph3D>
         </li>
-        <li>
-          Controller: Cube
+        <li style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
+          Controller: 
+          <ForceGraph3D
+            ref = {controllerRef}
+            graphData={controller}
+            width={200}
+            height={150}
+            backgroundColor={"rgba(255,255,255,255)"}
+            nodeThreeObject={(node) => {
+              const nodes = new THREE.Mesh(
+                new THREE.BoxGeometry(50, 50, 50),
+                new THREE.MeshLambertMaterial({
+                    transparent: true,
+                    opacity: 0.75,
+                    color: 'rgb(20,40,0)',
+                })
+                
+            );
+            return nodes;
+
+            }
+          }
+            >
+            
+          </ForceGraph3D>
         </li>
-        <li>
-          Repistory: Cone
+        <li style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
+          Repository: 
+          <ForceGraph3D
+            ref = {repositoryRef}
+            graphData={repository}
+            width={200}
+            height={150}
+            backgroundColor={"rgba(255,255,255,255)"}
+            nodeThreeObject={(node) => {    
+              const nodes = new THREE.Mesh(
+                new THREE.ConeGeometry(50, 75),
+                new THREE.MeshLambertMaterial({
+                    transparent: true,
+                    opacity: 0.75,
+                    color: 'rgb(20,40,0)',
+                })
+                
+            );
+            return nodes;
+
+            }
+          }
+          onNodeDragEnd={(node) => {
+            if (node.x && node.y && node.z) {
+                node.fx = node.x;
+                node.fy = node.y;
+                node.fz = node.z;
+            }
+          }}
+            >
+            
+          </ForceGraph3D>
         </li>
-        <li>
-          Entity: Cylinder
+        <li style={{ display: 'flex', justifyContent: 'space-between', padding: '2px' }}>
+          Entity: 
+          <ForceGraph3D
+            ref = {entityRef}
+            graphData={entity}
+            width={200}
+            height={150}
+            backgroundColor={"rgba(255,255,255,255)"}
+            nodeThreeObject={(node) => {   
+              const nodes = new THREE.Mesh(
+                new THREE.CylinderGeometry(35, 35, 75),
+                new THREE.MeshLambertMaterial({
+                    transparent: true,
+                    opacity: 0.75,
+                    color: 'rgb(20,40,0)',
+                })
+                
+            );
+            return nodes;
+
+            }
+          }
+          onNodeDragEnd={(node) => {
+            if (node.x && node.y && node.z) {
+                node.fx = node.x;
+                node.fy = node.y;
+                node.fz = node.z;
+            }
+          }}
+            >
+            
+          </ForceGraph3D>
         </li>
         
       </ul>
     </div>
     <div
       style={{
+        display: "flex", 
+        overflow: 'auto',
+        flexDirection: "column",
         fontSize:"20px",
         padding: "10px",
         backgroundColor: "lightblue",
@@ -159,7 +287,7 @@ function Legend(microservices) {
         textAlign: "center",
       }}
   >
-    Microservice Legend
+    Microservices
     {Object.entries(data).map(([name, color], index) => (
           <li
             key={index}
@@ -183,6 +311,36 @@ function Legend(microservices) {
           </li>
         ))}
   </div>
+  <div
+      style={{
+        fontSize:"20px",
+        padding: "10px",
+        backgroundColor: "lightblue",
+        border: "1px solid blue",
+        width: "300px", 
+        maxHeight: "250px",           
+        textAlign: "center",
+      }}
+  >
+    <ul>
+      <li>
+        Direct Call: ={'>'}
+
+      </li>
+      <li>
+      Endpoint Call: --{'>'}
+
+      </li>
+    </ul>
+  
+    </div>
+      
+      </>
+
+
+
+    )}
+    
   </div>
   );
 };
